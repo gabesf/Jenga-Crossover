@@ -13,6 +13,8 @@ namespace Building
             jengaPiece.name = $"Piece {pieceInstantiationData.Index}";
 
             AddJengaBehavior(pieceInstantiationData.Mastery, jengaPiece.gameObject);
+
+            jengaPiece.GetComponent<JengaPiece>().JengaPieceData = pieceInstantiationData.JengaPieceData;
         }
         
         private static void AddJengaBehavior(int mastery, GameObject jengaPiece)

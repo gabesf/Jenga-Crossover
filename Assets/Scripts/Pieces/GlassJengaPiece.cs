@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class GlassJengaPiece : JengaPiece
 {
-    public override string MaterialName => "Glass";
+    protected override string MaterialName => "Glass";
+    protected override string PieceLabel => "To Explore";
+    protected override Color LabelColor => new Color(0.6f, 0.6f, 0.6f);
 
     private GameObject pieceModel;
     
@@ -23,11 +25,6 @@ public class GlassJengaPiece : JengaPiece
 
     private void HandleOnTestStacks()
     {
-        
-        //_rb.isKinematic = true;
-        //_rb.useGravity = false;
         pieceModel.SetActive(false);
-        
-        Debug.Log($"Turning off");
     }
 }

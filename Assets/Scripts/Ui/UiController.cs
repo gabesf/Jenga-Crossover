@@ -15,8 +15,7 @@ public class UiController : MonoBehaviour
     public Button closeUiPanelButton;
 
     public Action onTestStackButtonPressed;
-    public Action _onShowNextStack;
-    public Action _onShowPreviousStack;
+    public Action<bool> onChangeStackCamera;
 
     public UiControlPanelToggler uiControlPanelToggler;
     private void Start()
@@ -46,11 +45,11 @@ public class UiController : MonoBehaviour
 
     private void OnShowNextStackCallback()
     {
-        _onShowNextStack?.Invoke();
+        onChangeStackCamera?.Invoke(false);
     }
 
     private void OnShowPreviousStackCallback()
     {
-        _onShowPreviousStack?.Invoke();
+        onChangeStackCamera?.Invoke(true);
     }
 }

@@ -1,19 +1,29 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class CameraAnimatorStateController : MonoBehaviour
+namespace CameraControl
 {
-    private Animator targetAnimator;
-
-    private void Start()
+    public class CameraAnimatorStateController : MonoBehaviour
     {
-        targetAnimator = GetComponent<Animator>();
-    }
+        private Animator _targetAnimator;
 
-    public void SetAnimationState(string stateName)
-    {
-        targetAnimator.CrossFade(stateName, 0f);
+        private readonly string[] _statesNames = new[]
+        {
+            "Stack0",
+            "Stack1",
+            "Stack2"
+        };
+        
+        private void Start()
+        {
+            _targetAnimator = GetComponent<Animator>();
+        }
+
+        public void SetAnimationState(int stateIndex)
+        {
+            _targetAnimator.CrossFade(_statesNames[stateIndex], 10f);
+            
+        }
+
+        
     }
 }

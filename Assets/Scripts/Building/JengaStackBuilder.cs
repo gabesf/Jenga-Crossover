@@ -76,6 +76,7 @@ namespace Building
                 Position = GetPositionFromIndex(i),
                 Rotation = GetRotationFromIndex(i),
                 Mastery =  jengaPieceData.mastery,
+                JengaPieceData = jengaPieceData,
                 Index = i
             };
 
@@ -114,7 +115,7 @@ namespace Building
 
         private int maxStackCount = 3;
 
-        public void BuildStacks(Dictionary<string, JengaStackData> jengaStacksData, Action OnStackBuilt)
+        public List<Transform> BuildStacks(Dictionary<string, JengaStackData> jengaStacksData)
         {
             
             Vector3 buildLocalPosition = new Vector3(-xPositionIncrement, 0f, 0f);
@@ -128,8 +129,8 @@ namespace Building
                 stacks.Add(BuildStackAt(jengaStacksData[key], buildLocalPosition));
                 buildLocalPosition += new Vector3(xPositionIncrement, 0f, 0f);
             }
-            
-            
+
+            return stacks;
         }
     }
 }

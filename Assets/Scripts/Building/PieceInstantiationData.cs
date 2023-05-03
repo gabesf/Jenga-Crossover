@@ -8,7 +8,7 @@ namespace Building
         public Quaternion Rotation;
         public int Mastery;
         public int Index;
-        
+        public JengaPieceData JengaPieceData;
     }
 
     public class StackNameplateInstantiationData

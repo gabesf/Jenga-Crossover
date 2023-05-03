@@ -10,10 +10,10 @@ namespace Building
     {
         public JengaStackBuilder jengaStackBuilder;
         public UiController uiController;
-        public CameraSetup CameraSetup;
         public static Action OnEnablePhysics;
         public static Action OnTestStacks;
-        public static Action OnTestTower;
+        public static Action<List<Transform>> OnStacksBuilt;
+        public static Action<bool> OnCameraSwitch;
         private void Start()
         {
             APIManager.RetrieveData(this, HandleOnStackedDataParsed);
@@ -22,6 +22,17 @@ namespace Building
         private void OnEnable()
         {
             uiController.onTestStackButtonPressed += HandleOnTestStackButtonPressed;
+            uiController.onChangeStackCamera += HandleNextStackButtonPressed;
+        }
+
+        private void HandleNextStackButtonPressed(bool goToPrevious)
+        {
+            OnCameraSwitch.Invoke(goToPrevious);
+        }
+
+        private void OnDisable()
+        {
+            uiController.onTestStackButtonPressed -= HandleOnTestStackButtonPressed;
         }
 
         private void HandleOnTestStackButtonPressed()
@@ -32,14 +43,12 @@ namespace Building
         private void HandleOnStackedDataParsed(Dictionary<string, JengaStackData> jengaStacksData)
         {
             
-            jengaStackBuilder.BuildStacks(jengaStacksData, OnStackBuilt());
+            var stacks = jengaStackBuilder.BuildStacks(jengaStacksData);
+            OnStacksBuilt.Invoke(stacks);
             OnEnablePhysics.Invoke();
         }
 
-        private void OnStackBuilt()
-        {
-            
-        }
+        
 
 
         
