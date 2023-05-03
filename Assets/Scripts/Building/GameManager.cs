@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using API;
-using Unity.Plastic.Newtonsoft.Json.Serialization;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -9,20 +9,31 @@ namespace Building
     public class GameManager : MonoBehaviour
     {
         public JengaStackBuilder jengaStackBuilder;
-
+        public UiController uiController;
+        
         public static Action OnEnablePhysics;
+        public static Action OnTestStacks;
+        public static Action OnTestTower;
         private void Start()
         {
             APIManager.RetrieveData(this, HandleOnStackedDataParsed);
+        }
+
+        private void OnEnable()
+        {
+            uiController.onTestStackButtonPressed += HandleOnTestStackButtonPressed;
+        }
+
+        private void HandleOnTestStackButtonPressed()
+        {
+            OnTestStacks?.Invoke();
         }
 
         private void HandleOnStackedDataParsed(Dictionary<string, JengaStackData> jengaStacksData)
         {
             
             jengaStackBuilder.BuildStacks(jengaStacksData);
-            
             OnEnablePhysics.Invoke();
-           
         }
 
 

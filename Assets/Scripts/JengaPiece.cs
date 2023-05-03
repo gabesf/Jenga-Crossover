@@ -6,20 +6,19 @@ using UnityEngine;
 
 public abstract class JengaPiece : MonoBehaviour
 {
-    private Rigidbody _rb;
+    protected Rigidbody _rb;
     private Renderer _renderer;
 
     public abstract string MaterialName { get; }
     
-    private void Awake()
+    protected virtual void Awake()
     {
         _renderer = GetComponentInChildren<Renderer>();
         _rb = GetComponentInChildren<Rigidbody>();
         Material material = Resources.Load<Material>(MaterialName);
-
         _renderer.material = material;
     }
-    private void OnEnable()
+    protected virtual void OnEnable()
     {
         GameManager.OnEnablePhysics += HandleOnEnablePhysics;
     }
@@ -34,14 +33,6 @@ public abstract class JengaPiece : MonoBehaviour
         _rb.isKinematic = false;
         _rb.useGravity = true;
     }
-}
-
-public class GlassJengaPiece : JengaPiece
-{
-    
-    
-
-    public override string MaterialName => "Glass";
 }
 
 public class WoodJengaPiece : JengaPiece

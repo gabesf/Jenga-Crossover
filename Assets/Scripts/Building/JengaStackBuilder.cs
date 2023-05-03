@@ -94,7 +94,6 @@ namespace Building
         {
             int heightLevel = Mathf.FloorToInt(pieceIndex / 3.0f);
             var height = (heightLevel * (pieceHeight + 0.001f) + pieceHeight / 2f);
-            //var height = (heightLevel *  pieceHeight+ pieceHeight / 2f) ;
 
             var lateralLevel = pieceIndex % 3;
             float lateralOffset;
@@ -104,14 +103,10 @@ namespace Building
                 lateralOffset = lateralLevel * 2f * pieceWidth - pieceWidth * 2f;
                 return new Vector3(lateralOffset, height, 0f);
             }
-            else
-            {
-                lateralOffset = lateralLevel * 2f * pieceWidth - pieceWidth * 2f;
-                return new Vector3(0f, height, lateralOffset);
-            }
 
+            lateralOffset = lateralLevel * 2f * pieceWidth - pieceWidth * 2f;
+            return new Vector3(0f, height, lateralOffset);
 
-            Debug.Log($"Piece {pieceIndex} Height {height} X {pieceIndex % 3}");
         }
 
         private int maxStackCount = 3;
