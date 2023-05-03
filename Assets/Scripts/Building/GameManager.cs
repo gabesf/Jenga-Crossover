@@ -13,10 +13,7 @@ namespace Building
         public static Action OnEnablePhysics;
         private void Start()
         {
-            JengaLevelBuilder levelBuilder = new JengaLevelBuilder();
-            APIManager apiManager = new APIManager(this, HandleOnStackedDataParsed);
-            //apiManager.OnStackedDataRetrieved += HandleOnStackedDataParsed;
-            
+            APIManager.RetrieveData(this, HandleOnStackedDataParsed);
         }
 
         private void HandleOnStackedDataParsed(Dictionary<string, JengaStackData> jengaStacksData)

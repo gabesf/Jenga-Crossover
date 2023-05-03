@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 [Serializable]
 public class JengaPieceData
@@ -31,4 +32,13 @@ public class JengaStackData
 
     public List<JengaPieceData> PiecesData;
     public string Name;
+
+    public void SortToSpecification()
+    {
+        PiecesData = PiecesData.OrderBy(piece => piece.domain)
+            .ThenBy(piece => piece.cluster)
+            .ThenBy(piece => piece.standardid)
+            .ToList();
+        
+    }
 }

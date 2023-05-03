@@ -6,11 +6,11 @@ using UnityEngine.Networking;
 
 namespace API
 {
-    public class APIManager
+    public static class APIManager
     {
-        private readonly Action<Dictionary<string, JengaStackData>> _onStackedDataRetrieved;
+        private static Action<Dictionary<string, JengaStackData>> _onStackedDataRetrieved;
 
-        public APIManager(MonoBehaviour gameManager, Action<Dictionary<string, JengaStackData>> handleOnStackedDataParsed)
+        public static void RetrieveData(MonoBehaviour gameManager, Action<Dictionary<string, JengaStackData>> handleOnStackedDataParsed)
         {
             _onStackedDataRetrieved += handleOnStackedDataParsed;
             gameManager.StartCoroutine(FetchData((response) =>
@@ -33,11 +33,22 @@ namespace API
                     stacksByGrade[pieceData.grade].PiecesData.Add(pieceData);
                 }
 
+                SortStacksToSpecification(stacksByGrade);
+                
+
                 _onStackedDataRetrieved?.Invoke(stacksByGrade);
             }));
         }
 
-        public IEnumerator FetchData(Action<string> result)
+        private static void SortStacksToSpecification(Dictionary<string, JengaStackData> stacksByGrade)
+        {
+            foreach (var stackByGrade in stacksByGrade.Values)
+            {
+                stackByGrade.SortToSpecification();
+            }
+        }
+
+        private static IEnumerator FetchData(Action<string> result)
         {
             var apiUrl = "https://ga1vqcu3o1.execute-api.us-east-1.amazonaws.com/Assessment/stack";
             using var request = UnityWebRequest.Get(apiUrl);
