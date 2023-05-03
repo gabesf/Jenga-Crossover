@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -22,7 +23,7 @@ namespace Building
         public Vector3 nameplateLocalPosition;
         public Vector3 nameplateLocalRotation;
 
-        public void BuildStackAt(JengaStackData jengaStackData, Vector3 buildLocalPosition)
+        public Transform BuildStackAt(JengaStackData jengaStackData, Vector3 buildLocalPosition)
         {
             GameObject stack = new GameObject($"{jengaStackData.Name} Stack");
             Transform stackTransform = stack.transform;
@@ -33,6 +34,8 @@ namespace Building
             //StartCoroutine(CreateJengaPiecesCoroutine(jengaStackData, stackTransform));
             CreateJengaPieces(jengaStackData, stackTransform);
             CreateStackNamePlate(jengaStackData, stackTransform);
+
+            return stackTransform;
         }
 
         private void CreateStackNamePlate(JengaStackData jengaStackData, Transform stackTransform)
@@ -111,18 +114,22 @@ namespace Building
 
         private int maxStackCount = 3;
 
-        public void BuildStacks(Dictionary<string, JengaStackData> jengaStacksData)
+        public void BuildStacks(Dictionary<string, JengaStackData> jengaStacksData, Action OnStackBuilt)
         {
             
             Vector3 buildLocalPosition = new Vector3(-xPositionIncrement, 0f, 0f);
             var stackCount = 0;
+
+            List<Transform> stacks = new List<Transform>();
             foreach (var key in jengaStacksData.Keys)
             {
                 if(++stackCount > maxStackCount) break;
                 
-                BuildStackAt(jengaStacksData[key], buildLocalPosition);
+                stacks.Add(BuildStackAt(jengaStacksData[key], buildLocalPosition));
                 buildLocalPosition += new Vector3(xPositionIncrement, 0f, 0f);
             }
+            
+            
         }
     }
 }

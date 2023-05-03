@@ -10,7 +10,7 @@ namespace Building
     {
         public JengaStackBuilder jengaStackBuilder;
         public UiController uiController;
-        
+        public CameraSetup CameraSetup;
         public static Action OnEnablePhysics;
         public static Action OnTestStacks;
         public static Action OnTestTower;
@@ -32,8 +32,13 @@ namespace Building
         private void HandleOnStackedDataParsed(Dictionary<string, JengaStackData> jengaStacksData)
         {
             
-            jengaStackBuilder.BuildStacks(jengaStacksData);
+            jengaStackBuilder.BuildStacks(jengaStacksData, OnStackBuilt());
             OnEnablePhysics.Invoke();
+        }
+
+        private void OnStackBuilt()
+        {
+            
         }
 
 
