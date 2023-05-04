@@ -143,7 +143,7 @@ public class DynamicRebuild: RebuildData
         {
             var stack = stacks[index];
             _stacksFinishedAnimating.Add(new IsStackFinished());
-            yield return behaviour.StartCoroutine(RebuiltStack(stack, _stacksFinishedAnimating[index]));
+            behaviour.StartCoroutine(RebuiltStack(stack, _stacksFinishedAnimating[index]));
         }
 
         yield return new WaitUntil(() => AllStacksFinished() == true);
@@ -191,14 +191,14 @@ public class DynamicRebuild: RebuildData
             //piece.RestorePose();
             GameObject pieceGameObject = piece.Transform.gameObject;
             LeanTween.move(pieceGameObject, piece.Position, TimeToReturn)
-                .setEaseInOutQuad()
+                .setEaseOutQuad()
                 .setOnComplete(() => rotationFinished = true);
             LeanTween.rotate(pieceGameObject, piece.Rotation.eulerAngles, TimeToReturn)
-                .setEaseInOutQuad()
+                .setEaseOutQuad()
                 .setOnComplete(() => movementFinished = true);
-            //yield return new WaitForSeconds()
-            //piece.Transform.position = piece.Position;
-            //piece.Transform.rotation = piece.Rotation;
+
+            yield return new WaitForSeconds(TimeBetweenAnimations);
+
         }
         
         yield return new WaitUntil(() => rotationFinished == movementFinished == true);

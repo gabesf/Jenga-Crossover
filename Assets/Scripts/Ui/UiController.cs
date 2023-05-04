@@ -34,7 +34,7 @@ namespace Ui
 
         private void OnChallengeButtonCallback()
         {
-            onRequestToInstantaneousTowerRebuild?.Invoke(new DynamicRebuild(0.5f, 0.3f));
+            onRequestToInstantaneousTowerRebuild?.Invoke(new DynamicRebuild(0.05f, 0.5f));
         }
 
         private void OnTowerRebuildCallback()
