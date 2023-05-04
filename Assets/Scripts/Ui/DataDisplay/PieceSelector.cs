@@ -1,91 +1,128 @@
 using System;
-using System.Collections;
+using API;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class PieceSelector : MonoBehaviour
+namespace Ui.DataDisplay
 {
-    private Transform highlight;
-    private Transform selection;
-    private RaycastHit raycastHit;
-    private Camera _camera;
-
-    public static Action<JengaPieceData> OnJengaPieceSelected;
-    private void Start()
+    public class PieceSelector : MonoBehaviour
     {
-        _camera = Camera.main;
-    }
+        private Transform _highlight;
+        private Transform _selection;
+        private RaycastHit _raycastHit;
+        private Camera _camera;
 
-    void Update()
-    {
-        // Highlight
-        
-        if (highlight != null)
+        public static Action<JengaPieceData> OnJengaPieceSelected;
+        private void Start()
         {
-            highlight.gameObject.GetComponent<Outline>().enabled = false;
-            highlight = null;
-            
+            _camera = Camera.main;
         }
-        
-        var ray = _camera.ScreenPointToRay(Input.mousePosition);
-        
-        
-        if (!EventSystem.current.IsPointerOverGameObject() && Physics.Raycast(ray, out raycastHit)) //Make sure you have EventSystem in the hierarchy before using EventSystem
+
+        private void OnEnable()
         {
-            highlight = raycastHit.transform;
-            if (highlight.CompareTag("Selectable") && highlight != selection)
+            InfoBillboard.OnInfoBillboardClosed += HandleOnInfoBillboardClosed;
+        }
+
+        private void HandleOnInfoBillboardClosed()
+        {
+            DisableOutline();
+        }
+
+        private void Update()
+        {
+            UpdateHighlight();
+            UpdateSelection();
+        }
+
+        private void UpdateHighlight()
+        {
+            if (_highlight != null)
             {
-                
-                if (highlight.gameObject.GetComponent<Outline>() != null)
+                _highlight.gameObject.GetComponent<Outline>().enabled = false;
+                _highlight = null;
+            }
+
+            var ray = _camera.ScreenPointToRay(Input.mousePosition);
+
+            if (IsGameObjectHit(ray))
+            {
+                _highlight = _raycastHit.transform;
+                if (_highlight.CompareTag("Selectable") && _highlight != _selection)
                 {
-                    highlight.gameObject.GetComponent<Outline>().enabled = true;
+                    HighlightGameObject(_highlight.gameObject);
                 }
                 else
                 {
-                    Outline outline = highlight.gameObject.AddComponent<Outline>();
-                    outline.enabled = true;
-                    highlight.gameObject.GetComponent<Outline>().OutlineColor = Color.magenta;
-                    highlight.gameObject.GetComponent<Outline>().OutlineWidth = 7.0f;
+                    _highlight = null;
                 }
-            }
-            else
-            {
-                highlight = null;
             }
         }
 
-        // Selection
-        if (Input.GetMouseButtonDown(1))
+        private void UpdateSelection()
         {
-            Debug.Log("Clicked");
-            if (highlight)
+            if (Input.GetMouseButtonDown(1))
             {
-                if (selection != null)
+                if (_highlight)
                 {
-                    selection.gameObject.GetComponent<Outline>().enabled = false;
+                    SelectGameObject(_highlight.gameObject);
                 }
-
-                
-                selection = raycastHit.transform;
-                selection.gameObject.GetComponent<Outline>().enabled = true;
-                var pieceData = selection.gameObject.GetComponent<JengaPiece>();
-
-                
-                
-                highlight = null;
-                
-                if (pieceData != null)
+                else
                 {
-                    OnJengaPieceSelected?.Invoke(pieceData.JengaPieceData);
+                    DisableOutline();
                 }
+            }
+        }
+
+        private void HighlightGameObject(GameObject gameObject)
+        {
+            if (gameObject.GetComponent<Outline>() != null)
+            {
+                gameObject.GetComponent<Outline>().enabled = true;
             }
             else
             {
-                if (selection)
-                {
-                    selection.gameObject.GetComponent<Outline>().enabled = false;
-                    selection = null;
-                }
+                Outline outline = gameObject.AddComponent<Outline>();
+                outline.enabled = true;
+                outline.OutlineColor = Color.black;
+                outline.OutlineWidth = 7.0f;
+            }
+        }
+
+        private void SelectGameObject(GameObject gameObject)
+        {
+            if (_selection != null)
+            {
+                _selection.gameObject.GetComponent<Outline>().enabled = false;
+            }
+
+            _selection = _raycastHit.transform;
+            _selection.gameObject.GetComponent<Outline>().enabled = true;
+            var pieceData = _selection.gameObject.GetComponentInParent<JengaPiece>();
+
+            _highlight = null;
+
+            if (pieceData != null)
+            {
+                OnJengaPieceSelected?.Invoke(pieceData.JengaPieceData);
+            }
+            else
+            {
+                throw new UnityException(
+                    $"Unexpected Object ({_selection.gameObject.name}) not containing Jenga Piece Data");
+            }
+        }
+
+        private bool IsGameObjectHit(Ray ray)
+        {
+            return !EventSystem.current.IsPointerOverGameObject() && Physics.Raycast(ray, out _raycastHit);
+        }
+
+        private void DisableOutline()
+        {
+            if (_selection)
+            {
+                _selection.gameObject.GetComponent<Outline>().enabled = false;
+                _selection = null;
             }
         }
     }

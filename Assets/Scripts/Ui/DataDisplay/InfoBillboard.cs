@@ -1,39 +1,77 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
+using API;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class InfoBillboard : MonoBehaviour
+namespace Ui.DataDisplay
 {
-    [SerializeReference] private Transform _cameraTransform;
-
-    public Button closeButton;
-
-    private void OnEnable()
+    public class InfoBillboard : MonoBehaviour
     {
-        PieceSelector.OnJengaPieceSelected += HandleOnJengaPieceSelected;
-    }
+        [SerializeReference] private Transform cameraTransform;
 
-    private void HandleOnJengaPieceSelected(JengaPieceData obj)
-    {
-        throw new NotImplementedException();
-    }
+        [SerializeReference] private Transform panelParentTransform;
+        [SerializeReference] private Button closeButton;
+        //[SerializeReference] private TextMeshPro text;
+        [SerializeReference] private TextMeshProUGUI text;
+        [SerializeReference] private LeanTweenType expandEasing;
+        [SerializeReference] private float expandTime;
+        [SerializeReference] private LeanTweenType contractEasing;
+        [SerializeReference] private float contractTime;
 
-    private void Start()
-    {
-        closeButton.onClick.AddListener(HandleOnCloseButtonPressed);
-        //if (Camera.main != null) _cameraTransform = Camera.main.transform;
-    }
+        private bool _isVisible;
 
-    private void HandleOnCloseButtonPressed()
-    {
+        public static Action OnInfoBillboardClosed;
+        private void OnEnable()
+        {
+            PieceSelector.OnJengaPieceSelected += HandleOnJengaPieceSelected;
+        }
+
+        private void HandleOnJengaPieceSelected(JengaPieceData jengaPieceData)
+        {
+            UpdateDataText(BillBoardStringBuilder.GetTextFromPieceData(jengaPieceData));
         
-    }
+            if (_isVisible == false)
+            {
+                ShowDataPanel();
+            }
+        }
 
-    private void FixedUpdate()
-    {
-        //transform.LookAt(_cameraTransform.position, Vector3.up);
-        transform.forward = _cameraTransform.forward;
+        private void UpdateDataText(string newText)
+        {
+            text.text = newText;
+            //throw new NotImplementedException();
+        }
+
+        private void Start()
+        {
+            closeButton.onClick.AddListener(HandleOnCloseButtonPressed);
+            //if (Camera.main != null) _cameraTransform = Camera.main.transform;
+        }
+
+        private void HandleOnCloseButtonPressed()
+        {
+            HideDataPanel();
+        }
+
+        private void HideDataPanel()
+        {
+            LeanTween.scale(panelParentTransform.gameObject, Vector3.zero, contractTime)
+                .setEase(contractEasing)
+                .setOnComplete(() => 
+                {
+                    _isVisible = false;
+                    OnInfoBillboardClosed.Invoke(); }
+            );
+        }
+
+        private void ShowDataPanel()
+        {
+            LeanTween.scale(panelParentTransform.gameObject, Vector3.one, expandTime)
+                .setEase(expandEasing)
+                .setOnComplete(() => _isVisible = true);
+
+        }
+        
     }
 }

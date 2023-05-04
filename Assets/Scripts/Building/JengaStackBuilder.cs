@@ -1,9 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using API;
 using UnityEngine;
-
-
 
 namespace Building
 {
@@ -11,19 +10,28 @@ namespace Building
     {
         public GameObject jengaPiecePrefab;
         public GameObject stackNameplatePrefab;
-
         public Transform tableTop;
-
         public float xPositionIncrement = 0.25f;
-
         public float pieceWidth = 0.15f;
         public float pieceLength = 0.05f;
         public float pieceHeight = 0.02f;
-
         public Vector3 nameplateLocalPosition;
         public Vector3 nameplateLocalRotation;
 
+        private int maxStackCount = 3;
+
+        // Build a stack of Jenga pieces at a given position
         public Transform BuildStackAt(JengaStackData jengaStackData, Vector3 buildLocalPosition)
+        {
+            Transform stackTransform = CreateStack(jengaStackData, buildLocalPosition);
+            CreateJengaPieces(jengaStackData, stackTransform);
+            CreateStackNamePlate(jengaStackData, stackTransform);
+
+            return stackTransform;
+        }
+
+        // Create a new stack object
+        private Transform CreateStack(JengaStackData jengaStackData, Vector3 buildLocalPosition)
         {
             GameObject stack = new GameObject($"{jengaStackData.Name} Stack");
             Transform stackTransform = stack.transform;
@@ -31,25 +39,24 @@ namespace Building
             stackTransform.parent = tableTop;
             stackTransform.localPosition = buildLocalPosition;
 
-            //StartCoroutine(CreateJengaPiecesCoroutine(jengaStackData, stackTransform));
-            CreateJengaPieces(jengaStackData, stackTransform);
-            CreateStackNamePlate(jengaStackData, stackTransform);
-
             return stackTransform;
         }
 
+        // Create the nameplate for the stack
         private void CreateStackNamePlate(JengaStackData jengaStackData, Transform stackTransform)
         {
-            StackNameplateInstantiationData stackStackNameplateInstantiationData = new StackNameplateInstantiationData()
+            StackNameplateInstantiationData stackNameplateInstantiationData = new StackNameplateInstantiationData()
             {
                 Name = jengaStackData.Name,
                 LocalPosition = nameplateLocalPosition,
                 LocalRotation = nameplateLocalRotation
             };
-            
-            StackNamePlateBuilder.CreateNameplate(stackStackNameplateInstantiationData, stackNameplatePrefab, stackTransform);
+
+            StackNamePlateBuilder.CreateNameplate(stackNameplateInstantiationData, stackNameplatePrefab,
+                stackTransform);
         }
 
+        // Create Jenga pieces for the stack
         private void CreateJengaPieces(JengaStackData jengaStackData, Transform stackTransform)
         {
             for (int i = 0; i < jengaStackData.PiecesData.Count; i++)
@@ -58,15 +65,7 @@ namespace Building
             }
         }
 
-        private IEnumerator CreateJengaPiecesCoroutine(JengaStackData jengaStackData, Transform stackTransform)
-        {
-            for (int i = 0; i < jengaStackData.PiecesData.Count; i++)
-            {
-                CreateJengaPiece(jengaStackData, stackTransform, i);
-                yield return new WaitForSeconds(0.1f);
-            }
-        }
-
+        // Create a single Jenga piece
         private void CreateJengaPiece(JengaStackData jengaStackData, Transform stackTransform, int i)
         {
             var jengaPieceData = jengaStackData.PiecesData[i];
@@ -75,7 +74,7 @@ namespace Building
             {
                 Position = GetPositionFromIndex(i),
                 Rotation = GetRotationFromIndex(i),
-                Mastery =  jengaPieceData.mastery,
+                Mastery = jengaPieceData.mastery,
                 JengaPieceData = jengaPieceData,
                 Index = i
             };
@@ -83,49 +82,46 @@ namespace Building
             JengaPieceBuilder.CreateJengaPiece(pieceInstantiationData, jengaPiecePrefab, stackTransform);
         }
 
-
+        // Get the rotation for the Jenga piece based on its index
         private Quaternion GetRotationFromIndex(int pieceIndex)
         {
             return IsPieceFlipped(pieceIndex) ? Quaternion.Euler(new Vector3(0f, 90f, 0f)) : Quaternion.identity;
         }
 
+        // Determine if the Jenga piece is flipped based on its index
         private static bool IsPieceFlipped(int pieceIndex)
         {
             return pieceIndex % 6 < 3;
         }
 
+        // Get the position for the Jenga piece based on its index
         private Vector3 GetPositionFromIndex(int pieceIndex)
         {
             int heightLevel = Mathf.FloorToInt(pieceIndex / 3.0f);
             var height = (heightLevel * (pieceHeight + 0.001f) + pieceHeight / 2f);
-
             var lateralLevel = pieceIndex % 3;
             float lateralOffset;
             if (IsPieceFlipped(pieceIndex))
             {
-                //Debug.Break();
                 lateralOffset = lateralLevel * 2f * pieceWidth - pieceWidth * 2f;
                 return new Vector3(lateralOffset, height, 0f);
             }
 
             lateralOffset = lateralLevel * 2f * pieceWidth - pieceWidth * 2f;
             return new Vector3(0f, height, lateralOffset);
-
         }
 
-        private int maxStackCount = 3;
-
+        // Build multiple Jenga stacks
         public List<Transform> BuildStacks(Dictionary<string, JengaStackData> jengaStacksData)
         {
-            
             Vector3 buildLocalPosition = new Vector3(-xPositionIncrement, 0f, 0f);
             var stackCount = 0;
 
             List<Transform> stacks = new List<Transform>();
             foreach (var key in jengaStacksData.Keys)
             {
-                if(++stackCount > maxStackCount) break;
-                
+                if (++stackCount > maxStackCount) break;
+
                 stacks.Add(BuildStackAt(jengaStacksData[key], buildLocalPosition));
                 buildLocalPosition += new Vector3(xPositionIncrement, 0f, 0f);
             }

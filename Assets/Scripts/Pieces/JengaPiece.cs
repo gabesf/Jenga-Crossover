@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using API;
 using Building;
 using TMPro;
 using UnityEngine;
@@ -17,13 +18,16 @@ public abstract class JengaPiece : MonoBehaviour
     public JengaPieceData JengaPieceData { get; set; }
     protected virtual void Awake()
     {
-        _renderer = GetComponentInChildren<Renderer>();
         _rb = GetComponentInChildren<Rigidbody>();
+        
         Material material = Resources.Load<Material>(MaterialName);
+        _renderer = GetComponentInChildren<Renderer>();
         _renderer.material = material;
+        
         var textMesh = GetComponentInChildren<TextMeshPro>();
         textMesh.text = PieceLabel;
         textMesh.color = LabelColor;
+        
         _rb.gameObject.tag = "Selectable";
     }
     protected virtual void OnEnable()

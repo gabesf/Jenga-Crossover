@@ -3,7 +3,7 @@ using UnityEngine.Serialization;
 
 namespace Ui
 {
-    public class UiControlPanelToggler : MonoBehaviour
+    public class UiControlPanelToggle : MonoBehaviour
     {
         public Transform controlPanelAnchor;
 

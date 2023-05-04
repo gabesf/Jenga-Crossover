@@ -19,7 +19,6 @@ public class CameraSetup : MonoBehaviour
         for (int i = 0; i < stacks.Count; i++)
         {
             var stack = stacks[i];
-            Debug.Log($"i {i} Stack {stack.name} Cameras : {cameras.Length}");
             cameras[i].m_Follow = stack;
             cameras[i].m_LookAt = stack;
         }
